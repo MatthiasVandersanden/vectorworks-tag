@@ -103,6 +103,7 @@ function getOctokitSingleton() {
   }
 
   const token = core.getInput('token');
+  core.debug(`Token: ${token}`);
   octokitSingleton = github.getOctokit(token);
   return octokitSingleton;
 }
