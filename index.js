@@ -194,7 +194,7 @@ async function action() {
 
   const config = getConfig(path);
   if (config === null) {
-    core.setOutput('new_tag', undefined);
+    core.setOutput('tag', undefined);
     return;
   }
   
@@ -206,7 +206,7 @@ async function action() {
   await tagCommit(GITHUB_SHA, newTag);
 
   core.info(`The new tag is ${newTag}`);
-  core.setOutput('new_tag', newTag);
+  core.setOutput('tag', newTag);
 
   return 
 }
