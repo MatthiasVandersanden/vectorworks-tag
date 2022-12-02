@@ -9688,15 +9688,14 @@ const core = __nccwpck_require__(8021);
 const github = __nccwpck_require__(4366);
 const fs = __nccwpck_require__(7147);
 
-function getBranchFromRef(ref) {
-  return ref.replace('refs/heads/', '');
-}
-
 function getConfig() {
   const path = core.getInput('path');
+  core.info(`Reading config at ${path}`);
+
   try {
     const data = fs.readFileSync(path);
     let config = JSON.parse(data);
+    core.info(`Read config: ${config}`);
 
     return config;
   } catch (error) {
@@ -9857,7 +9856,7 @@ function getNewTag(latestTag) {
 
 async function tagCommit(GITHUB_SHA, tag) {
   const octokit = getOctokitSingleton();
-  core.debug(`Pushing new tag to the repo.`);
+  core.info(`Pushing new tag to the repo.`);
   await octokit.git.createRef({
     ...context.repo,
     ref: `refs/tags/${newTag}`,
@@ -9877,22 +9876,23 @@ async function action() {
     core.setFailed('Missing GITHUB_SHA.');
     return;
   }
-
-  const config = getConfig(path);
+  
+  const config = getConfig();
   if (config === null) {
-    core.setOutput('new_tag', undefined);
+    core.setOutput('tag', undefined);
     return;
   }
   
-  const branch = getBranchFromRef(GITHUB_REF);
+  core.info("Starting tagging.");
+
   const tags = await getRelevantTags(config.year, config.sp);
   const latestTag = getLatestTag(tags, config.year, config.sp);
   const newTag = getNewTag(latestTag);
 
   await tagCommit(GITHUB_SHA, newTag);
 
-  core.info(`The new tag is ${newTag}`);
-  core.setOutput('new_tag', newTag);
+  core.info(`The new tag is ${newTag}.`);
+  core.setOutput('tag', newTag);
 
   return 
 }
