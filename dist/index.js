@@ -9789,15 +9789,16 @@ function getOctokitSingleton() {
   }
 
   const token = core.getInput('token');
-  core.debug(`Token: ${token}`);
   octokitSingleton = github.getOctokit(token);
-  core.debug(`Octokit: ${JSON.stringify(octokitSingleton)}`);
   return octokitSingleton;
 }
 
 async function getAllTags(fetchedTags = [], page = 1) {
   const octokit = getOctokitSingleton();
-  const tags = await octokit.repos.listTags({
+  const repos = octokit.repos;
+  core.info(JSON.stringify(octokit));
+  core.info(JSON.stringify(repos));
+  const tags = await repos.listTags({
     ...github.context.repo,
     per_page: 100,
     page
@@ -9862,7 +9863,7 @@ async function tagCommit(GITHUB_SHA, tag) {
   const octokit = getOctokitSingleton();
   core.info(`Pushing new tag to the repo.`);
   await octokit.git.createRef({
-    ...context.repo,
+    ...githib.context.repo,
     ref: `refs/tags/${newTag}`,
     sha: GITHUB_SHA,
   });
