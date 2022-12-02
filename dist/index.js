@@ -9784,7 +9784,7 @@ function compareTags(a, b) {
 }
 
 function getOctokitSingleton() {
-  if (octokitSingleton) {
+  if (octokitSingleton !== undefined) {
     return octokitSingleton;
   }
 
@@ -9805,7 +9805,7 @@ async function getAllTags(fetchedTags = [], page = 1) {
     return [...fetchedTags, ...tags.data];
   }
 
-  return listTags([...fetchedTags, ...tags.data], page + 1);
+  return getAllTags([...fetchedTags, ...tags.data], page + 1);
 }
 
 async function getRelevantTags(year, servicePack) {
