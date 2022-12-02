@@ -2,6 +2,8 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const fs = require('fs');
 
+let octokitSingleton = undefined;
+
 function getConfig() {
   const path = core.getInput('path');
   core.info(`Reading config at ${path}`);
