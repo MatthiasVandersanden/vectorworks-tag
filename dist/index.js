@@ -9697,7 +9697,7 @@ function getConfig() {
   try {
     const data = fs.readFileSync(path);
     let config = JSON.parse(data);
-    core.info(`Read config: ${config}`);
+    core.info(`Read config: ${JSON.stringify(config)}`);
 
     return config;
   } catch (error) {
@@ -9791,7 +9791,7 @@ function getOctokitSingleton() {
   const token = core.getInput('token');
   core.debug(`Token: ${token}`);
   octokitSingleton = github.getOctokit(token);
-  core.debug(`Octokit: ${octokitSingleton}`);
+  core.debug(`Octokit: ${JSON.stringify(octokitSingleton)}`);
   return octokitSingleton;
 }
 
