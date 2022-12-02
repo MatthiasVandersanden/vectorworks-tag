@@ -9784,25 +9784,26 @@ function compareTags(a, b) {
 }
 
 function getOctokitSingleton() {
-  if (octokitSingleton !== undefined) {
-    return octokitSingleton;
+  if (octokitSingleton === undefined) {
+    const token = core.getInput('token');
+    octokitSingleton = github.getOctokit(token);
   }
 
-  const token = core.getInput('token');
-  octokitSingleton = github.getOctokit(token);
   return octokitSingleton;
 }
 
 async function getAllTags(fetchedTags = [], page = 1) {
   const octokit = getOctokitSingleton();
-  const repos = octokit.repos;
-  core.info(JSON.stringify(octokit));
-  core.info(JSON.stringify(repos));
-  const tags = await repos.listTags({
-    ...github.context.repo,
+  core.info(JSON.stringify(github));
+  core.info(JSON.stringify(github.owner));
+  core.info(JSON.stringify(github.repo));
+
+  const tags = await octokit.request("GET /repos/{owner}/{repo}/tags{?per_page,page}", {
+    owner: github.owner,
+    repo: github.repo,
     per_page: 100,
-    page
-  });
+    page: page
+  })
 
   if (tags.data.length < 100) {
     return [...fetchedTags, ...tags.data];
