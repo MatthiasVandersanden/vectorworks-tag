@@ -161,8 +161,8 @@ function getNewTag(latestTag) {
   return `v${latestTag.year}.${sp}.${latestTag.count + 1}`;
 }
 
-async function tagCommit(GITHUB_SHA, tag) {
-  core.info(`Pushing new tag to the repo.`);
+async function tagCommit(GITHUB_SHA, newTag) {
+  core.info(`Pushing new tag ${newTag} to the repo.`);
   await octokit.rest.git.createRef({
     ...github.context.repo,
     ref: `refs/tags/${newTag}`,
