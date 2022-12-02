@@ -1,16 +1,12 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
+import * as core from '@actions/core';
+import action from './action'
 
-try {
-  const token = core.getInput('token');
-  console.log(`Hello ${token}!`);
-  
-  const time = (new Date()).toTimeString();
-  core.setOutput("new_tag", time);
-  core.setOutput("old_tag", "hai");
-
-  const payload = JSON.stringify(github.context.payload, undefined, 2)
-  console.log(`The event payload: ${payload}`);
-} catch (error) {
-  core.setFailed(error.message);
+async function run() {
+  try {
+    await action();
+  } catch (error) {
+    core.setFailed(error.message);
+  }
 }
+
+run();
