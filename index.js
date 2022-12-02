@@ -152,7 +152,7 @@ function getLatestTag(sortedTags, year, servicePack) {
     }
   }
 
-  return sortedTags[0];
+  return sortedTags[sortedTags.length - 1];
 }
 
 function getNewTag(latestTag) {
