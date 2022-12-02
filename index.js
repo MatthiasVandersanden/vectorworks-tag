@@ -105,7 +105,6 @@ async function getAllTags(fetchedTags = [], page = 1) {
     per_page: 100,
     page: page
   });
-  core.info(JSON.stringify(tags));
 
   if (tags.data.length < 100) {
     return [...fetchedTags, ...tags.data];
@@ -134,7 +133,7 @@ async function getRelevantTags(year, servicePack) {
     .sort((a, b) => compareTags(a, b));
   
   const relevantTags = validTags.filter((tag) => tag.year === year && tag.sp.maj === sp.maj && tag.sp.min === sp.min);
-  relevantTags.forEach((tag) => core.info(`Found relevant tag: ${tag}.`));
+  relevantTags.forEach((tag) => core.info(`Found relevant tag: ${JSON.stringify(tag)}.`));
 
   return relevantTags;
 }
