@@ -1,0 +1,12 @@
+name: 'Vectorworks Tag'
+description: 'Tags build using a custom Vectorworks version format'
+inputs:
+  token:
+    description: 'The secret github token to authorize tagging'
+    required: true
+outputs:
+  tag:
+    description: 'The value of the new tag'
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
