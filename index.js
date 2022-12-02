@@ -157,7 +157,7 @@ function getLatestTag(sortedTags, year, servicePack) {
 }
 
 function getNewTag(latestTag) {
-  let sp = latestTag.sp.min === 0 ? `${latestTag.sp.maj}` : `${latestTag.sp.maj}.${latestTag.sp.min}`
+  let sp = latestTag.sp.min === 0 ? `sp${latestTag.sp.maj}` : `sp${latestTag.sp.maj}.${latestTag.sp.min}`
   return `v${latestTag.year}.${sp}.${latestTag.count + 1}`;
 }
 
