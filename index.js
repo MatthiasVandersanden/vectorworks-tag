@@ -8,9 +8,12 @@ function getBranchFromRef(ref) {
 
 function getConfig() {
   const path = core.getInput('path');
+  core.info(`Reading config at ${path}`);
+
   try {
     const data = fs.readFileSync(path);
     let config = JSON.parse(data);
+    core.info(`Read config: ${config}`);
 
     return config;
   } catch (error) {
@@ -191,14 +194,15 @@ async function action() {
     core.setFailed('Missing GITHUB_SHA.');
     return;
   }
-
-  const config = getConfig(path);
+  
+  const config = getConfig();
   if (config === null) {
     core.setOutput('tag', undefined);
     return;
   }
   
-  const branch = getBranchFromRef(GITHUB_REF);
+  core.info();
+
   const tags = await getRelevantTags(config.year, config.sp);
   const latestTag = getLatestTag(tags, config.year, config.sp);
   const newTag = getNewTag(latestTag);
