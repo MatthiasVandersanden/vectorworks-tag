@@ -2,7 +2,8 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const fs = require('fs');
 
-let octokitSingleton = undefined;
+const token = core.getInput("token");
+const octokit = github.getOctokit(token);
 
 function getConfig() {
   const path = core.getInput('path');
@@ -97,27 +98,13 @@ function compareTags(a, b) {
   return 0;
 }
 
-function getOctokitSingleton() {
-  if (octokitSingleton === undefined) {
-    const token = core.getInput('token');
-    octokitSingleton = github.getOctokit(token);
-  }
-
-  return octokitSingleton;
-}
-
 async function getAllTags(fetchedTags = [], page = 1) {
-  const octokit = getOctokitSingleton();
-  core.info(JSON.stringify(github));
-  core.info(JSON.stringify(github.owner));
-  core.info(JSON.stringify(github.repo));
-
-  const tags = await octokit.request("GET /repos/{owner}/{repo}/tags{?per_page,page}", {
-    owner: github.owner,
-    repo: github.repo,
+  await octokit.rest.repos.listTags({
+    owner: github.context.repo.owner,
+    repo: github.context.repo.repo,
     per_page: 100,
     page: page
-  })
+  });
 
   if (tags.data.length < 100) {
     return [...fetchedTags, ...tags.data];
@@ -175,7 +162,6 @@ function getNewTag(latestTag) {
 }
 
 async function tagCommit(GITHUB_SHA, tag) {
-  const octokit = getOctokitSingleton();
   core.info(`Pushing new tag to the repo.`);
   await octokit.git.createRef({
     ...githib.context.repo,
