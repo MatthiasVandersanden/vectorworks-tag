@@ -2,10 +2,6 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const fs = require('fs');
 
-function getBranchFromRef(ref) {
-  return ref.replace('refs/heads/', '');
-}
-
 function getConfig() {
   const path = core.getInput('path');
   core.info(`Reading config at ${path}`);
@@ -174,7 +170,7 @@ function getNewTag(latestTag) {
 
 async function tagCommit(GITHUB_SHA, tag) {
   const octokit = getOctokitSingleton();
-  core.debug(`Pushing new tag to the repo.`);
+  core.info(`Pushing new tag to the repo.`);
   await octokit.git.createRef({
     ...context.repo,
     ref: `refs/tags/${newTag}`,
@@ -201,7 +197,7 @@ async function action() {
     return;
   }
   
-  core.info();
+  core.info("Starting tagging.");
 
   const tags = await getRelevantTags(config.year, config.sp);
   const latestTag = getLatestTag(tags, config.year, config.sp);
@@ -209,7 +205,7 @@ async function action() {
 
   await tagCommit(GITHUB_SHA, newTag);
 
-  core.info(`The new tag is ${newTag}`);
+  core.info(`The new tag is ${newTag}.`);
   core.setOutput('tag', newTag);
 
   return 
