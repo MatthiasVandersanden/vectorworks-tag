@@ -6,8 +6,7 @@ inputs:
     required: true
   path:
     description: 'The path to the config file'
-    required: false
-    default: './config.json'
+    required: true
 outputs:
   tag:
     description: 'The value of the new tag'
