@@ -99,7 +99,7 @@ function compareTags(a, b) {
 }
 
 async function getAllTags(fetchedTags = [], page = 1) {
-  await octokit.rest.repos.listTags({
+  const tags = await octokit.rest.repos.listTags({
     owner: github.context.repo.owner,
     repo: github.context.repo.repo,
     per_page: 100,
