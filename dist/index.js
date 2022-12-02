@@ -9702,14 +9702,14 @@ function getConfig() {
 
     return config;
   } catch (error) {
-    core.debug(error.message);
+    core.info(error.message);
     return null;
   }
 }
 
 function parseServicePack(sp) {
   if (!sp.startsWith("sp")) {
-    core.debug("Incorrect service pack: " + sp);
+    core.info("Incorrect service pack: " + sp);
     return null;
   }
 
@@ -9726,24 +9726,24 @@ function parseServicePack(sp) {
 function parseTag(tag) {
   try {
     if (tag === undefined || tag === null || tag.length === 0) {
-      core.debug("Tag is undefined or empty")
+      core.info("Tag is undefined or empty")
       return null;
     }
   
     if (!tag.startsWith('v')) {
-      core.debug("Incorrect tag syntax: tags should start with a lowercase v");
+      core.info("Incorrect tag syntax: tags should start with a lowercase v");
       return null;
     }
   
     let parts = tag.split(".");
     if (parts.length !== 3 && parts.length !== 4) {
-      core.debug("Incorrect tag syntax: tags have three parts: a year, sp version and a count");
+      core.info("Incorrect tag syntax: tags have three parts: a year, sp version and a count");
       return null;
     }
   
     let year = parseInt(parts[0].substr(1, parts[0].length - 1));
     if (year < 2000 || year > 3000) {
-      core.debug("Incorrect year: " + year);
+      core.info("Incorrect year: " + year);
       return null;
     }
   
@@ -9754,7 +9754,7 @@ function parseTag(tag) {
 
     let count = parseInt(parts[parts.length - 1]);
     if (count < 0) {
-      core.debug(`Incorrect tag syntax: the counter should be positive (was ${count})`);
+      core.info(`Incorrect tag syntax: the counter should be positive (was ${count})`);
       return null;
     }
   
@@ -9791,6 +9791,7 @@ async function getAllTags(fetchedTags = [], page = 1) {
     per_page: 100,
     page: page
   });
+  core.info(JSON.stringify(tags));
 
   if (tags.data.length < 100) {
     return [...fetchedTags, ...tags.data];
@@ -9802,7 +9803,7 @@ async function getAllTags(fetchedTags = [], page = 1) {
 async function getRelevantTags(year, servicePack) {
   let sp = parseServicePack(servicePack);
   if (sp === null) {
-    core.debug(`Invalid service pack ${servicePack}.`)
+    core.info(`Invalid service pack ${servicePack}.`)
     return [];
   }
 
@@ -9811,16 +9812,16 @@ async function getRelevantTags(year, servicePack) {
 
   // Invalid tags
   tags.forEach((tag, index) => {
-    if (tag === null) core.debug(`Found invalid tag: ${tagStrings[index]}.`);
+    if (tag === null) core.info(`Found invalid tag: ${JSON.stringify(tagStrings[index])}.`);
   })
 
   const validTags = tags
     .filter((tag) => tag !== null)
     .sort((a, b) => compareTags(a, b));
-  validTags.forEach((tag) => core.debug(`Found valid tag: ${tag}.`));
+  validTags.forEach((tag) => core.info(`Found valid tag: ${tag}.`));
   
-  const relevantTags = tags.filter((tag) => tag.year === year && tag.sp.maj === sp.maj && tag.sp.min === sp.min);
-  relevantTags.forEach((tag) => core.debug(`Found relevant tag: ${tag}.`));
+  const relevantTags = validTags.filter((tag) => tag.year === year && tag.sp.maj === sp.maj && tag.sp.min === sp.min);
+  relevantTags.forEach((tag) => core.info(`Found relevant tag: ${tag}.`));
 
   return relevantTags;
 }
