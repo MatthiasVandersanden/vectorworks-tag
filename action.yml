@@ -4,6 +4,10 @@ inputs:
   token:
     description: 'The secret github token to authorize tagging'
     required: true
+  path:
+    description: 'The path to the config file'
+    required: false
+    default: './config.json'
 outputs:
   tag:
     description: 'The value of the new tag'

@@ -8,6 +8,10 @@ This action looks at all previous tags, increments the latest tag, and tags the 
 
 **Required** The secret github token that authorizes the tagging.
 
+### `path`
+
+The path to the config file containing the year and sp version.
+
 ## Outputs
 
 ### `tag`
