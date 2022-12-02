@@ -9876,8 +9876,8 @@ async function action() {
   
   core.info("Starting tagging.");
 
-  const tags = await getRelevantTags(config.year, config.sp);
-  const latestTag = getLatestTag(tags, config.year, config.sp);
+  const tags = await getRelevantTags(config.year, config.servicePack);
+  const latestTag = getLatestTag(tags, config.year, config.servicePack);
   const newTag = getNewTag(latestTag);
 
   await tagCommit(GITHUB_SHA, newTag);
