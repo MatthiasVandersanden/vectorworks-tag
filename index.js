@@ -163,8 +163,8 @@ function getNewTag(latestTag) {
 
 async function tagCommit(GITHUB_SHA, tag) {
   core.info(`Pushing new tag to the repo.`);
-  await octokit.git.createRef({
-    ...githib.context.repo,
+  await octokit.rest.git.createRef({
+    ...github.context.repo,
     ref: `refs/tags/${newTag}`,
     sha: GITHUB_SHA,
   });
