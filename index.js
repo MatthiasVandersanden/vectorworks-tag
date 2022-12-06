@@ -131,6 +131,7 @@ async function getRelevantTags(year, servicePack) {
   const validTags = tags
     .filter((tag) => tag !== null)
     .sort((a, b) => compareTags(a, b));
+    tags.forEach((tag) => core.info(`Found tag: ${JSON.stringify(tag)}.`));
   
   const relevantTags = validTags.filter((tag) => tag.year === year && tag.sp.maj === sp.maj && tag.sp.min === sp.min);
   relevantTags.forEach((tag) => core.info(`Found relevant tag: ${JSON.stringify(tag)}.`));
@@ -145,12 +146,16 @@ function getLatestTag(sortedTags, year, servicePack) {
       sp = { maj: 0, min: 0 };
     }
 
+    core.info(`There is no tag with this configuration yet, creating one...`);
+
     return {
       year, 
       sp, 
       count: -1
     }
   }
+
+  core.info(`Latest tag is ${JSON.stringify(sortedTags[sortedTags.length - 1])}`);
 
   return sortedTags[sortedTags.length - 1];
 }
