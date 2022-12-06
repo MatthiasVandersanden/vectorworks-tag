@@ -113,6 +113,11 @@ async function getAllTags(fetchedTags = [], page = 1) {
   return getAllTags([...fetchedTags, ...tags.data], page + 1);
 }
 
+function formatTag(tag) {
+  let sp = tag.sp.min === 0 ? `sp${tag.sp.maj}` : `sp${tag.sp.maj}.${tag.sp.min}`
+  return `v${tag.year}.${sp}.${tag.count}`;
+}
+
 async function getRelevantTags(year, servicePack) {
   let sp = parseServicePack(servicePack);
   if (sp === null) {
@@ -134,10 +139,10 @@ async function getRelevantTags(year, servicePack) {
   const validTags = tags
     .filter((tag) => tag !== null)
     .sort((a, b) => compareTags(a, b));
-  core.info(`Valid tags: ${JSON.stringify(validTags)}`);
+  core.info(`Valid tags: ${JSON.stringify(validTags.map(tag => formatTag(tag)))}`);
   
   const relevantTags = validTags.filter((tag) => tag.year === parseInt(year) && tag.sp.maj === sp.maj && tag.sp.min === sp.min);
-  core.info(`Valid tags: ${JSON.stringify(relevantTags)}`);
+  core.info(`Relevant tags: ${JSON.stringify(relevantTags.map(tag => formatTag(tag)))}`);
 
   return relevantTags;
 }
@@ -164,8 +169,11 @@ function getLatestTag(sortedTags, year, servicePack) {
 }
 
 function getNewTag(latestTag) {
-  let sp = latestTag.sp.min === 0 ? `sp${latestTag.sp.maj}` : `sp${latestTag.sp.maj}.${latestTag.sp.min}`
-  return `v${latestTag.year}.${sp}.${latestTag.count + 1}`;
+  return formatTag({
+    year: latestTag.year,
+    sp: latestTag.sp,
+    count: latestTag.count + 1
+  });
 }
 
 async function tagCommit(GITHUB_SHA, newTag) {
