@@ -119,22 +119,25 @@ async function getRelevantTags(year, servicePack) {
     core.info(`Invalid service pack ${servicePack}.`)
     return [];
   }
+  core.info(`Service pack: ${JSON.stringify(sp)}`);
 
   const tagData = await getAllTags();
   const tags = tagData.map((tag) => parseTag(tag.name));
 
   // Invalid tags
-  tags.forEach((tag, index) => {
-    if (tag === null) core.info(`Found invalid tag: ${JSON.stringify(tagData[index])}.`);
-  })
+  core.info(`Invalid tags: ${JSON.stringify(
+    tags
+    .map((tag, index) => tag === null ? tagData[index].name : null)
+    .filter(tag => tag !== null)
+  )}`);
 
   const validTags = tags
     .filter((tag) => tag !== null)
     .sort((a, b) => compareTags(a, b));
-    tags.forEach((tag) => core.info(`Found tag: ${JSON.stringify(tag)}.`));
+  core.info(`Valid tags: ${JSON.stringify(validTags)}`);
   
-  const relevantTags = validTags.filter((tag) => tag.year === year && tag.sp.maj === sp.maj && tag.sp.min === sp.min);
-  relevantTags.forEach((tag) => core.info(`Found relevant tag: ${JSON.stringify(tag)}.`));
+  const relevantTags = validTags.filter((tag) => tag.year === parseInt(year) && tag.sp.maj === sp.maj && tag.sp.min === sp.min);
+  core.info(`Valid tags: ${JSON.stringify(relevantTags)}`);
 
   return relevantTags;
 }
