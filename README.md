@@ -21,7 +21,8 @@ The value of the new tag.
 ## Example usage
 
 ```yaml
-uses: actions/vectorworks-tag@v1.0
+uses: MatthiasVandersanden/vectorworks-tag@v1.0
 with:
   token: 'secret-token'
+  path: 'path'
 ```
