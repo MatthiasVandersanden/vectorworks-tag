@@ -9800,7 +9800,7 @@ async function getAllTags(fetchedTags = [], page = 1) {
 }
 
 function formatTag(tag) {
-  let sp = tag.sp.min === 0 ? `sp${tag.sp.maj}` : `sp${tag.sp.maj}.${tag.sp.min}`
+  let sp = `sp${tag.sp.maj}.${tag.sp.min}`
   return `v${tag.year}.${sp}.${tag.count}`;
 }
 
