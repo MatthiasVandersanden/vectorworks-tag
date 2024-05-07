@@ -9711,7 +9711,7 @@ function parseUpdate(up) {
   if (up === null)
     return null;
 
-  if (!up.startsWith("up")) {
+  if (!up.startsWith("up") && !up.startsWith("sp")) {
     core.info("Incorrect update: " + up);
     return null;
   }
@@ -9894,14 +9894,16 @@ async function action() {
   }
 
   core.info("Starting tagging.");
-  core.info(JSON.stringify(config));
+
+  const year = config.year;
+  const update = config.update ?? config.servicePack;
 
   core.info("Getting relevant tags.");
-  const tags = await getRelevantTags(config.year, config.update);
+  const tags = await getRelevantTags(year, update);
 
   core.info("Getting latest tag.");
-  const latestTag = getLatestTag(tags, config.year, config.update);
-  
+  const latestTag = getLatestTag(tags, year, update);
+
   core.info("Generating new tag.");
   const newTag = getNewTag(latestTag);
 
