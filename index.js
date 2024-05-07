@@ -77,6 +77,7 @@ function parseTag(tag) {
 
     return { year, up, count };
   } catch (error) {
+    core.info(error);
     return null;
   }
 }
