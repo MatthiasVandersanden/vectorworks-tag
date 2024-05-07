@@ -21,13 +21,13 @@ function getConfig() {
   }
 }
 
-function parseServicePack(sp) {
-  if (!sp.startsWith("sp")) {
-    core.info("Incorrect service pack: " + sp);
+function parseUpdate(up) {
+  if (!up.startsWith("up")) {
+    core.info("Incorrect update: " + up);
     return null;
   }
 
-  let parts = sp.split('.');
+  let parts = up.split('.');
   let maj = parseInt(parts[0].substr(2, parts[0].length - 1));
   let min = parts.length === 1 ? 0 : parseInt(parts[1]);
 
@@ -49,9 +49,9 @@ function parseTag(tag) {
       return null;
     }
   
-    let parts = tag.split(".");
+    let parts = tag.uplit(".");
     if (parts.length !== 3 && parts.length !== 4) {
-      core.info("Incorrect tag syntax: tags have three parts: a year, sp version and a count");
+      core.info("Incorrect tag syntax: tags have three parts: a year, up version and a count");
       return null;
     }
   
@@ -61,8 +61,8 @@ function parseTag(tag) {
       return null;
     }
   
-    let sp = parseServicePack(parts.length === 3 ? parts[1] : `${parts[1]}.${parts[2]}`);
-    if (sp === null) {
+    let up = parseUpdate(parts.length === 3 ? parts[1] : `${parts[1]}.${parts[2]}`);
+    if (up === null) {
       return null;
     }
 
@@ -72,7 +72,7 @@ function parseTag(tag) {
       return null;
     }
   
-    return { year, sp, count };
+    return { year, up, count };
   } catch (error) {
     return null;
   }
@@ -83,12 +83,12 @@ function compareTags(a, b) {
     return a.year - b.year;
   }
 
-  if (a.sp.maj !== b.sp.maj) {
-    return a.sp.maj - b.sp.maj;
+  if (a.up.maj !== b.up.maj) {
+    return a.up.maj - b.up.maj;
   }
 
-  if (a.sp.min !== b.sp.min) {
-    return a.sp.min - b.sp.min;
+  if (a.up.min !== b.up.min) {
+    return a.up.min - b.up.min;
   }
 
   if (a.count !== b.count) {
@@ -114,17 +114,17 @@ async function getAllTags(fetchedTags = [], page = 1) {
 }
 
 function formatTag(tag) {
-  let sp = `sp${tag.sp.maj}.${tag.sp.min}`
-  return `v${tag.year}.${sp}.${tag.count}`;
+  let up = `up${tag.up.maj}.${tag.up.min}`
+  return `v${tag.year}.${up}.${tag.count}`;
 }
 
-async function getRelevantTags(year, servicePack) {
-  let sp = parseServicePack(servicePack);
-  if (sp === null) {
-    core.info(`Invalid service pack ${servicePack}.`)
+async function getRelevantTags(year, update) {
+  let up = parseUpdate(update);
+  if (up === null) {
+    core.info(`Invalid update ${update}.`)
     return [];
   }
-  core.info(`Service pack: ${JSON.stringify(sp)}`);
+  core.info(`Update: ${JSON.stringify(up)}`);
 
   const tagData = await getAllTags();
   const tags = tagData.map((tag) => parseTag(tag.name));
@@ -141,24 +141,24 @@ async function getRelevantTags(year, servicePack) {
     .sort((a, b) => compareTags(a, b));
   core.info(`Valid tags: ${JSON.stringify(validTags.map(tag => formatTag(tag)))}`);
   
-  const relevantTags = validTags.filter((tag) => tag.year === parseInt(year) && tag.sp.maj === sp.maj && tag.sp.min === sp.min);
+  const relevantTags = validTags.filter((tag) => tag.year === parseInt(year) && tag.up.maj === up.maj && tag.up.min === up.min);
   core.info(`Relevant tags: ${JSON.stringify(relevantTags.map(tag => formatTag(tag)))}`);
 
   return relevantTags;
 }
 
-function getLatestTag(sortedTags, year, servicePack) {
+function getLatestTag(sortedTags, year, update) {
   if (sortedTags.length === 0) {
-    let sp = parseServicePack(servicePack);
-    if (sp === null) {
-      sp = { maj: 0, min: 0 };
+    let up = parseUpdate(update);
+    if (up === null) {
+      up = { maj: 0, min: 0 };
     }
 
     core.info(`There is no tag with this configuration yet, creating one...`);
 
     return {
       year, 
-      sp, 
+      up, 
       count: -1
     }
   }
@@ -171,7 +171,7 @@ function getLatestTag(sortedTags, year, servicePack) {
 function getNewTag(latestTag) {
   return formatTag({
     year: latestTag.year,
-    sp: latestTag.sp,
+    up: latestTag.up,
     count: latestTag.count + 1
   });
 }
@@ -206,8 +206,8 @@ async function action() {
   
   core.info("Starting tagging.");
 
-  const tags = await getRelevantTags(config.year, config.servicePack);
-  const latestTag = getLatestTag(tags, config.year, config.servicePack);
+  const tags = await getRelevantTags(config.year, config.update);
+  const latestTag = getLatestTag(tags, config.year, config.update);
   const newTag = getNewTag(latestTag);
 
   await tagCommit(GITHUB_SHA, newTag);
