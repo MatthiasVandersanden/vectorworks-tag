@@ -276,9 +276,15 @@ async function action() {
   }
 
   core.info("Starting tagging.");
+  core.info(JSON.stringify(config));
 
+  core.info("Getting relevant tags.");
   const tags = await getRelevantTags(config.year, config.update);
+
+  core.info("Getting latest tag.");
   const latestTag = getLatestTag(tags, config.year, config.update);
+  
+  core.info("Generating new tag.");
   const newTag = getNewTag(latestTag);
 
   await tagCommit(GITHUB_SHA, newTag);
