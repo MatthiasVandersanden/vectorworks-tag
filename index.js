@@ -22,6 +22,9 @@ function getConfig() {
 }
 
 function parseUpdate(up) {
+  if (up === null)
+    return null;
+
   if (!up.startsWith("up")) {
     core.info("Incorrect update: " + up);
     return null;
@@ -43,24 +46,24 @@ function parseTag(tag) {
       core.info("Tag is undefined or empty")
       return null;
     }
-  
+
     if (!tag.startsWith('v')) {
       core.info("Incorrect tag syntax: tags should start with a lowercase v");
       return null;
     }
-  
+
     let parts = tag.uplit(".");
     if (parts.length !== 3 && parts.length !== 4) {
       core.info("Incorrect tag syntax: tags have three parts: a year, up version and a count");
       return null;
     }
-  
+
     let year = parseInt(parts[0].substr(1, parts[0].length - 1));
     if (year < 2000 || year > 3000) {
       core.info("Incorrect year: " + year);
       return null;
     }
-  
+
     let up = parseUpdate(parts.length === 3 ? parts[1] : `${parts[1]}.${parts[2]}`);
     if (up === null) {
       return null;
@@ -71,7 +74,7 @@ function parseTag(tag) {
       core.info(`Incorrect tag syntax: the counter should be positive (was ${count})`);
       return null;
     }
-  
+
     return { year, up, count };
   } catch (error) {
     return null;
@@ -132,15 +135,15 @@ async function getRelevantTags(year, update) {
   // Invalid tags
   core.info(`Invalid tags: ${JSON.stringify(
     tags
-    .map((tag, index) => tag === null ? tagData[index].name : null)
-    .filter(tag => tag !== null)
+      .map((tag, index) => tag === null ? tagData[index].name : null)
+      .filter(tag => tag !== null)
   )}`);
 
   const validTags = tags
     .filter((tag) => tag !== null)
     .sort((a, b) => compareTags(a, b));
   core.info(`Valid tags: ${JSON.stringify(validTags.map(tag => formatTag(tag)))}`);
-  
+
   const relevantTags = validTags.filter((tag) => tag.year === parseInt(year) && tag.up.maj === up.maj && tag.up.min === up.min);
   core.info(`Relevant tags: ${JSON.stringify(relevantTags.map(tag => formatTag(tag)))}`);
 
@@ -157,8 +160,8 @@ function getLatestTag(sortedTags, year, update) {
     core.info(`There is no tag with this configuration yet, creating one...`);
 
     return {
-      year, 
-      up, 
+      year,
+      up,
       count: -1
     }
   }
@@ -187,23 +190,23 @@ async function tagCommit(GITHUB_SHA, newTag) {
 
 async function action() {
   const { GITHUB_REF, GITHUB_SHA } = process.env;
-  
+
   if (!GITHUB_REF) {
     core.setFailed('Missing GITHUB_REF.');
     return;
   }
-  
+
   if (!GITHUB_SHA) {
     core.setFailed('Missing GITHUB_SHA.');
     return;
   }
-  
+
   const config = getConfig();
   if (config === null) {
     core.setOutput('tag', undefined);
     return;
   }
-  
+
   core.info("Starting tagging.");
 
   const tags = await getRelevantTags(config.year, config.update);
@@ -215,7 +218,7 @@ async function action() {
   core.info(`The new tag is ${newTag}.`);
   core.setOutput('tag', newTag);
 
-  return 
+  return
 }
 
 async function run() {
