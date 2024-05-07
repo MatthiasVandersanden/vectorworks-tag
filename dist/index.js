@@ -9738,7 +9738,7 @@ function parseTag(tag) {
       return null;
     }
 
-    let parts = tag.uplit(".");
+    let parts = tag.split(".");
     if (parts.length !== 3 && parts.length !== 4) {
       core.info("Incorrect tag syntax: tags have three parts: a year, up version and a count");
       return null;
